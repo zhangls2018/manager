@@ -1,0 +1,94 @@
+<?xml version= "1.0" encoding ="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manager.mapper.TSAccountMapper" >
+	<sql id="base_colums">
+		id,user_id as userId,name,password,status
+	</sql>
+	
+	<select id="get" resultType="TSAccount">
+		select <include refid="base_colums"/>
+		from t_s_account
+		where id = #{id}
+	</select>
+	
+	<select id="getByName" resultType="TSAccount">
+		select <include refid="base_colums"/>
+		from t_s_account
+		where name = #{name}
+	</select>
+	
+	<select id="listByIdList" resultType="TSAccount">
+		select <include refid="base_colums"/>
+		from t_s_account
+		where id in
+			<foreach collection="list" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<insert id="insert">
+		insert into t_s_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="status != null">
+				status
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="password != null">
+				#{password},
+			</if>
+			<if test="status != null">
+				#{status}
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="update">
+		update t_s_account
+		<set>
+			<if test="id != null">
+				id = #{id},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="status != null">
+				status = #{status}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from t_s_account
+		where id = #{id}
+	</delete>
+	
+</mapper>

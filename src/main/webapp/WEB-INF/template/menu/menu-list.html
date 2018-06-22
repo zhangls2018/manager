@@ -1,0 +1,193 @@
+﻿<#include "/common/meta.html">
+<style type="text/css" class="init">
+	td.details-control {
+		background: url('/static/custom/images/details_open.png') no-repeat center center;
+		cursor: pointer;
+	}
+	tr.shown td.details-control {
+		background: url('/static/custom/images/details_close.png') no-repeat center center;
+	}
+</style>
+<body>
+<!--_header 作为公共模版分离出去-->
+<!--_menu 作为公共模版分离出去-->
+<#include "/common/head.html">
+<#include "/common/menuTemplate.html">
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+	<nav class="breadcrumb">
+		<i class="Hui-iconfont">&#xe67f;</i> 首页 
+		<#if names??>
+			<#list names as name>
+				<span class="c-gray en">&gt;</span> ${name}
+			</#list>
+		</#if> 
+		<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+	</nav>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="text-c"> 关键字：
+				<input type="text" class="input-text" style="width:250px" placeholder="输入菜单名称" id="keyword">
+				<button type="button" class="btn btn-success radius" id="search"><i class="Hui-iconfont">&#xe665;</i> 走你</button>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="menu_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加菜单</a></span> </div>
+			<div class="mt-20">
+				<table id="dataTableCxt" class="table table-border table-bordered table-hover table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="50"></th>
+							<th>序号</th>
+							<th>菜单名称</th>
+							<th width="300">访问路径</th>
+							<th width="150">菜单级别</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</article>
+	</div>
+</section>
+
+
+<#include "/common/footer.html">
+<script type="text/javascript">
+$(function(){
+	var dataTableCxt = $("#dataTableCxt").DataTable({
+		'serverSide' : true,
+		'paging' : false,
+		'autoWidth' : true,
+		'lengthChange' : true,
+		'searching' : false,
+		"ordering": false,
+		'info' : false,
+		'ajax' : {
+			'url' : '/menu/listData',
+			'type' : 'POST',
+			'data':function(data){
+				data.keyword = $('#keyword').val();
+				console.log(data);
+			}
+		},
+		'columns': [
+			{
+			    "class": 'details-control',
+			    "orderable": false,
+			    "data": null,
+			    "defaultContent": ''
+			},
+            {
+				'data': 'id'
+			}, {
+				'data': 'name'
+			}, {
+				'data': 'url'
+			},{
+				'data': 'level'
+			},{
+				'class':'text-c'
+			}
+		],
+		'columnDefs': [{
+			'targets': 4,
+			render: function(data, type, row) {
+				return "一级菜单";
+			}
+		},{
+			'targets': 3,
+			render: function(data, type, row) {
+				if(data == null){
+					data = "";
+				}
+				return data;
+			}
+		}, {
+			'targets': 5,
+			'render': function(data, type, row) {
+				var html = '<a title="编辑" href="javascript:;" onclick="menu_edit(\''+row.id+'\');" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>';
+				html += '<a title="删除" href="javascript:;" onclick="menu_del(\'' + row.id + '\')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>';
+				
+				return html;
+			}
+		}],
+		'createdRow': function(row, data, dataIndex) {
+			$(row).addClass('text-c');
+		}
+	});
+	$('#dataTableCxt tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = dataTableCxt.row( tr );
+        if ( row.child.isShown() ) {
+            row.child.hide();
+            tr.removeClass('shown');
+        }else {
+            format(row.data().id,function(data){
+			 	row.child( buildChildTab(data.data) ).show();
+	            tr.addClass('shown');
+            });
+        }
+    });
+	$('#search').click(function(){
+		dataTableCxt.ajax.reload();
+	});
+});
+
+function format(id,fn){
+	$.ajax({
+	    type: "post",
+		url: "/menu/listChildren",
+		data: {parentId:id},
+		dataType : "json",
+		success:function(data){
+			if( data.code == 200 ){
+				typeof fn==='function' && fn(data);
+			}else{
+				layer.msg('操作失败');
+			}
+		}
+	});
+};
+
+function buildChildTab( data){
+	var html = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
+    html += '<thead><tr class="text-c"><th width="290">序号</th><th width="150">菜单名称</th><th width="300">访问路径</th><th>菜单级别</th><th width="100">操作</th></tr></thead>';
+    html += '<tbody>';
+    $.each( data, function(i, n){
+    	html += '<tr class="text-c"><td>'+(i+1)+'</td><td>'+n.name+'</td><td>'+n.url+'</td><td>二级菜单</td><td class="f-14"><a title="编辑" href="javascript:;" onclick="menu_edit('+n.id+');" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" onclick="menu_del('+n.id+')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td></tr>';
+      });
+    html += '</tbody></table>';
+	return html;
+}
+
+
+function menu_add(){
+	layer_show('添加菜单','/menu/add',500,500);
+}
+
+function menu_edit(id){
+	if(id){
+		layer_show('编辑菜单','/menu/edit?id='+id,500,500);
+	}
+}
+
+function menu_del(id){
+	if(id){
+		layer.confirm("删除后将菜单栏移除",{
+			btn : [ '确定', '取消']
+		},function(){
+			$.post('/menu/delete',{id:id},function(data){
+				if(data.code == 200){
+					location.replace(location.href);
+				}else{
+					layer.alert('删除失败',{time:2000,icon:2});
+				}
+			});
+		});
+	}
+}
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

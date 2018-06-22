@@ -1,0 +1,119 @@
+<?xml version= "1.0" encoding ="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manager.mapper.TSAuthorityMenuMapper" >
+	<sql id="base_colums">
+		id,name,parent_id as parentId,icon,url,type,sort
+	</sql>
+	
+	<select id="get" resultType="TSAuthorityMenu">
+		select <include refid="base_colums"/>
+		from t_s_authority_menu
+		where id = #{id}
+	</select>
+	
+	<select id="listAll" resultType="TSAuthorityMenu">
+		select <include refid="base_colums"/>
+		from t_s_authority_menu
+		order by sort asc
+	</select>
+	
+	<select id="listLv1" resultType="TSAuthorityMenu">
+		select <include refid="base_colums"/>
+		from t_s_authority_menu
+		where parent_id is null
+		order by sort asc
+	</select>
+	
+	<select id="listByIdList" resultType="TSAuthorityMenu">
+		select <include refid="base_colums"/>
+		from t_s_authority_menu
+		where id in
+			<foreach collection="list" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<insert id="insert">
+		insert into t_s_authority_menu
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="parentId != null">
+				parent_id,
+			</if>
+			<if test="icon != null">
+				icon,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+			<if test="type != null">
+				type
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="parentId != null">
+				#{parentId},
+			</if>
+			<if test="icon != null">
+				#{icon},
+			</if>
+			<if test="url != null">
+				#{url},
+			</if>
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="sort != null">
+				#{sort}
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="update">
+		update t_s_authority_menu
+		<set>
+			<if test="id != null">
+				id = #{id},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId},
+			</if>
+			<if test="icon != null">
+				icon = #{icon},
+			</if>
+			<if test="url != null">
+				url = #{url},
+			</if>
+			<if test="type != null">
+				type = #{type},
+			</if>
+			<if test="sort != null">
+				sort = #{sort}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from t_s_authority_menu
+		where id = #{id}
+	</delete>
+	
+</mapper>

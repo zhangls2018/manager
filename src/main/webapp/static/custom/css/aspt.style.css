@@ -1,0 +1,7 @@
+@CHARSET "UTF-8";
+.aspt-line{
+	line-height: 30px;
+}
+.aspt-line .ml{
+	margin-left: 20px;
+}

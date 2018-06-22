@@ -1,0 +1,85 @@
+<?xml version= "1.0" encoding ="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manager.mapper.TSUserMapper" >
+	<sql id="base_colums">
+		id,name,sex,birthday
+	</sql>
+	
+	<select id="get" resultType="TSUser">
+		select <include refid="base_colums"/>
+		from t_s_user
+		where id = #{id}
+	</select>
+	
+	<select id="getByName" resultType="TSUser">
+		select <include refid="base_colums"/>
+		from t_s_user
+		where name = #{name}
+	</select>
+	
+	<select id="listByIdList" resultType="TSUser">
+		select <include refid="base_colums"/>
+		from t_s_user
+		where id in
+			<foreach collection="list" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<insert id="insert">
+		insert into t_s_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="birthday != null">
+				birthday
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="sex != null">
+				#{sex},
+			</if>
+			<if test="birthday != null">
+				#{birthday}
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="update">
+		update t_s_user
+		<set>
+			<if test="id != null">
+				id = #{id},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="sex != null">
+				sex = #{sex},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from t_s_user
+		where id = #{id}
+	</delete>
+	
+</mapper>

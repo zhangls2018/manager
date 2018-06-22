@@ -1,0 +1,41 @@
+<script type="text/javascript" src="${base}/static/lib/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="${base}//static/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="${base}/static/h-ui/js/H-ui.js"></script> 
+<script type="text/javascript" src="${base}/static/h-ui.admin/js/H-ui.admin.page.js"></script>
+<script type="text/javascript" src="${base}/static/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="${base}/static/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="${base}/static/lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="${base}/static/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="${base}/static/lib/jquery.validation/1.14.0/jquery.validate.js"></script> 
+<script type="text/javascript" src="${base}/static/lib/jquery.validation/1.14.0/validate-methods.js"></script> 
+<script type="text/javascript" src="${base}/static/lib/jquery.validation/1.14.0/messages_zh.js"></script> 
+<script type="text/javascript" src="${base}/static/ztree/v3/js/jquery.ztree.all-3.5.min.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	$('#logout').click(function(){
+		$.post('/login/logout',function(data){
+			window.location.reload();
+		})
+	})
+})
+function loginInfo(){
+	var html = 	'<div style="padding:15px;"> '
+				+	'<p style="line-height:40px;margin-left:30px">登录名：${Session.user.actName}</p>'
+				+	'<p style="line-height:40px;margin-left:30px">名称：${Session.user.serName}</p>'
+				+'</div>';
+	layer.open({
+		type: 1,
+		area: ['300px','200px'],
+		fix: false, //不固定
+		maxmin: true,
+		shade:0.4,
+		title: '查看信息',
+		content: html
+	});
+}
+
+function updatePassword(){
+	layer_show('修改密码','/user/updatePassword',400,300)
+}
+</script>
